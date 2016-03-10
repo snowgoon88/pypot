@@ -239,3 +239,9 @@ _add_control('moving',
              access=_DxlAccess.readonly,
              dxl_to_si=conv.dxl_to_bool,
              getter_name='is_moving')
+
+_add_control('goal acceleration',
+             address=0x49,
+             models=('MX-28', 'MX-64', 'MX-106'),
+             dxl_to_si=conv.dxl_to_acc,
+             si_to_dxl=conv.acc_to_dxl)

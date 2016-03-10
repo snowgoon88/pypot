@@ -85,7 +85,15 @@ def speed_to_dxl(value, model):
 
     return int(round(direction + abs(value) / (6 * speed_factor), 0))
 
+
 # MARK: - Torque
+
+def dxl_to_acc(value, model):
+    return round(value / 254. * 8.538, 1)
+
+
+def acc_to_dxl(value, model):
+    return int(round(value * 254. / 8.538, 0))
 
 
 def dxl_to_torque(value, model):
@@ -102,8 +110,8 @@ def dxl_to_load(value, model):
 
     return dxl_to_torque(load, model) * direction
 
-# PID Gains
 
+# PID Gains
 
 def dxl_to_pid(value, model):
     return (value[0] * 0.004,
@@ -118,15 +126,16 @@ def pid_to_dxl(value, model):
 # MARK: - Model
 
 dynamixelModels = {
-    12: 'AX-12',    # 12 + (0<<8)
-    18: 'AX-18',    # 18 + (0<<8)
-    28: 'RX-28',    # 28 + (0<<8)
-    29: 'MX-28',    # 29 + (0<<8)
-    64: 'RX-64',    # 64 + (0<<8)
-    360: 'MX-12',   # 104 + (1<<8)
-    310: 'MX-64',   # 54 + (1<<8)
-    320: 'MX-106',  # 64 + (1<<8)
-    350: 'XL-320',  # 94 + (1<<8)
+    12: 'AX-12',     # 12 + (0<<8)
+    18: 'AX-18',     # 18 + (0<<8)
+    28: 'RX-28',     # 28 + (0<<8)
+    29: 'MX-28',     # 29 + (0<<8)
+    64: 'RX-64',     # 64 + (0<<8)
+    360: 'MX-12',    # 104 + (1<<8)
+    310: 'MX-64',    # 54 + (1<<8)
+    320: 'MX-106',   # 64 + (1<<8)
+    350: 'XL-320',   # 94 + (1<<8)
+    321: 'MX-106+',  # 64 + (1<<8)
 }
 
 
