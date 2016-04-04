@@ -73,6 +73,7 @@ def from_vrep(config, vrep_host='127.0.0.1', vrep_port=19997, scene=None,
             simulated_robot = from_vrep(config, '127.0.0.1', 19997, 'poppy.ttt')
 
     """
+    print( "from_vrep VrepIO(vrep_host, vrep_port)")
     vrep_io = VrepIO(vrep_host, vrep_port)
 
     vreptime = vrep_time(vrep_io)
@@ -86,7 +87,9 @@ def from_vrep(config, vrep_host='127.0.0.1', vrep_port=19997, scene=None,
     motors = [motor_from_confignode(config, name)
               for name in config['motors'].keys()]
 
+    print( "from_vrep VrepController(..)")
     vc = VrepController(vrep_io, scene, motors)
+    print( "from_vrep _ini_vrep_streaming()")
     vc._init_vrep_streaming()
 
     sensor_controllers = []
@@ -159,4 +162,4 @@ def from_vrep(config, vrep_host='127.0.0.1', vrep_port=19997, scene=None,
         return vrep_io.get_object_orientation(object, relative_to_object)
     Robot.get_object_orientation = partial(get_object_orientation, robot)
 
-    return robot
+    return robot,vrep_io

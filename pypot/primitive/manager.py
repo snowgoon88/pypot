@@ -27,7 +27,8 @@ class PrimitiveManager(StoppableLoopThread):
         :param func filter: function used to combine the different request (default mean)
 
         """
-        StoppableLoopThread.__init__(self, freq)
+        StoppableLoopThread.__init__(self, freq, origin="PrimitiveManager")
+        print( "create PrimitiveManager at PrimitiveManager" )
 
         self._prim = []
         self._motors = motors
@@ -50,6 +51,7 @@ class PrimitiveManager(StoppableLoopThread):
 
     def update(self):
         """ Combined at a predefined frequency the request orders and affect them to the real motors. """
+        logger.debug( "update with "+str(len(self._motors))+" motors" ) 
         with self.syncing:
             for m in self._motors:
                 to_set = defaultdict(list)

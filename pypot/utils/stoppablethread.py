@@ -2,6 +2,9 @@ import threading
 
 from . import pypot_time as time
 
+import sys
+import logging
+logger = logging.getLogger(__name__)
 
 class StoppableThread(object):
     """ Stoppable version of python Thread.
@@ -21,6 +24,7 @@ class StoppableThread(object):
         :param func teardown: specific teardown function to use (otherwise self.teardown)
 
         """
+        print( "create at StoppableThread" )
         self._started = threading.Event()
         self._running = threading.Event()
         self._resume = threading.Event()
@@ -159,9 +163,12 @@ class StoppableThread(object):
         self._resume.wait()
 
 
-def make_update_loop(thread, update_func):
+def make_update_loop(thread, update_func, origin):
     """ Makes a run loop which calls an update function at a predefined frequency. """
+    logger = logging.getLogger( origin )
+    logger.info( "Start periodic loop at period={0}".format(thread.period))
     while not thread.should_stop():
+        logger.debug( "inside" );
         if thread.should_pause():
             thread.wait_to_resume()
 
@@ -170,9 +177,14 @@ def make_update_loop(thread, update_func):
         end = time.time()
 
         dt = thread.period - (end - start)
-
+        logger.debug( "wait for dt={0}".format(dt) )
+        # print( origin,"update()" )
+        # sys.stdout.flush()
         if dt > 0:
             time.sleep(dt)
+        logger.debug( "end sleep" )
+        # print( origin,"after_sleep" )
+        # sys.stdout.flush()
 
 
 class StoppableLoopThread(StoppableThread):
@@ -181,20 +193,25 @@ class StoppableLoopThread(StoppableThread):
     .. note:: This class does not mean to be accurate. The given frequency will be approximately followed - depending for instance on CPU load - and only reached if the update method takes less time than the chosen loop period.
 
     """
-    def __init__(self, frequency, update=None):
+    def __init__(self, frequency, update=None, origin="base"):
         """
         :params float frequency: called frequency of the :meth:`~pypot.stoppablethread.StoppableLoopThread.update` method
 
         """
         StoppableThread.__init__(self)
+        print( "create",origin,"at StoppableLoopThread" )
 
         self.period = 1.0 / frequency
         self._update = self.update if update is None else update
+        self._origin = origin
+        self._logger = logging.getLogger( self._origin )
 
     def run(self):
         """ Called the update method at the pre-defined frequency. """
-        make_update_loop(self, self._update)
+        self._logger.debug( "run" )
+        make_update_loop(self, self._update, self._origin)
 
     def update(self):
         """ Update method called at the pre-defined frequency. """
+        self._logger.debug( "update from StoppableThreadLoop" )
         pass

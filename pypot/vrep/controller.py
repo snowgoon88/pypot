@@ -6,6 +6,8 @@ from ..dynamixel.conversion import torque_max
 from ..robot.sensor import Sensor
 from .io import remote_api
 
+import logging
+logger = logging.getLogger(__name__)
 
 class VrepController(MotorsController):
 
@@ -20,7 +22,8 @@ class VrepController(MotorsController):
         :param float sync_freq: synchronization frequency
 
         """
-        MotorsController.__init__(self, vrep_io, motors, sync_freq)
+        MotorsController.__init__(self, vrep_io, motors, sync_freq, origin="VrepController")
+        print( "create VrepController at VrepController" )
 
         if scene is not None:
             vrep_io.load_scene(scene, start=True)
@@ -41,6 +44,7 @@ class VrepController(MotorsController):
         At each update all motor position are read from vrep and set to the motors. The motors target position are also send to v-rep.
 
         """
+        logger.info( "update" )
         # Read all the angle limits
         h, _, l, _ = self.io.call_remote_api('simxGetObjectGroupData',
                                              remote_api.sim_object_joint_type,
@@ -70,13 +74,14 @@ class VrepController(MotorsController):
             # Send new values from Motor to V-REP
             p = deg2rad(round(m.__dict__['goal_position'], 1))
             self.io.set_motor_position(motor_name=m.name, position=p)
-
+            logger.info( "VrepController pos m={0} p={1}".format( m.name, p) )  
             t = m.__dict__['torque_limit'] * tmax / 100.
 
             if m.__dict__['compliant']:
                 t = 0.
 
             self.io.set_motor_force(motor_name=m.name, force=t)
+            logger.info( "VrepController tor m={0} t={1}".format( m.name, t))  
 
     def _init_vrep_streaming(self):
         # While the code below may look redundant and that

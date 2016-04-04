@@ -330,7 +330,8 @@ class SafeCompliance(StoppableLoopThread):
     """ This class creates a controller to active compliance only if the current motor position is included in the angle limit, else the compliance is turned off. """
 
     def __init__(self, motor, frequency=50):
-        StoppableLoopThread.__init__(self, frequency)
+        StoppableLoopThread.__init__(self, frequency, origin="SafeCompliance")
+        print( "create SafeCompliance at SafeCompliance" )
 
         self.motor = motor
 

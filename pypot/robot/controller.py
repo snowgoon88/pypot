@@ -9,14 +9,15 @@ class AbstractController(StoppableLoopThread):
     To define your Controller, you need to define the :meth:`~pypot.utils.stoppablethread.StoppableLoopThread.update` method. This method will be called at the predefined frequency. An exemple of how to do it can be found in :class:`~pypot.dynamixel.controller.BaseDxlController`.
 
     """
-    def __init__(self, io, sync_freq):
+    def __init__(self, io, sync_freq, origin="AbstractController"):
         """
         :param io: IO used to communicate with the hardware motors
         :type io: :class:`~pypot.robot.io.AbstractIO`
         :param float sync_freq: synchronization frequency
 
         """
-        StoppableLoopThread.__init__(self, sync_freq)
+        StoppableLoopThread.__init__(self, sync_freq, origin=origin)
+        print( "create",origin,"at AbstractController")
 
         self.io = io
 
@@ -38,7 +39,7 @@ class MotorsController(AbstractController):
     The controller synchronizes the reading/writing of a set of motor instances with their "hardware". Each update loop synchronizes values from the "software" :class:`~pypot.dynamixel.motor.DxlMotor` with their "hardware" equivalent.
 
     """
-    def __init__(self, io, motors, sync_freq=50):
+    def __init__(self, io, motors, sync_freq=50, origin="MotorsController"):
         """
         :param io: IO used to communicate with the hardware motors
         :type io: :class:`~pypot.robot.io.AbstractIO`
@@ -46,15 +47,16 @@ class MotorsController(AbstractController):
         :param float sync_freq: synchronization frequency
 
         """
-        AbstractController.__init__(self, io, sync_freq)
+        AbstractController.__init__(self, io, sync_freq, origin)
 
+        print( "create",origin,"at MotorsController" )
         self.motors = motors
 
 
 class DummyController(MotorsController):
     def __init__(self, motors):
-        MotorsController.__init__(self, None, motors)
-
+        MotorsController.__init__(self, None, motors, origin="DummyController")
+        print( "create",origin,"at DummyController" )
     def update(self):
         for m in self.motors:
             m.__dict__['present_position'] = m.goal_position
@@ -74,6 +76,6 @@ class SensorsController(AbstractController):
         :param float sync_freq: synchronization frequency
 
         """
-        AbstractController.__init__(self, io, sync_freq)
-
+        AbstractController.__init__(self, io, sync_freq, origin="SensorsController")
+        print( "create",origin,"at SensorsController" )
         self.sensors = sensors
